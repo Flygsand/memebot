@@ -1,0 +1,3 @@
+[submodule "src/vendor/IRC"]
+	path = src/vendor/IRC
+	url = git@github.com:mtah/IRC-js.git
