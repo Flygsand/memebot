@@ -3,7 +3,6 @@
 sys = require 'sys'
 path = require 'path'
 fs = require 'fs'
-jasmine = require 'jasmine'
 {spawn, exec} = require 'child_process'
 
 run_quietly = (command, args, callback) ->
@@ -22,6 +21,9 @@ compile = (dir, args, callback) ->
     run 'cp', ['-rf', dir, '-t', 'build'], ->
       run 'coffee', args.concat(['-o', path.join('build', dir), '-c', dir]), callback
 
+task 'dependencies', 'install dependencies', ->
+  run 'npm', ['install', 'underscore', 'http://github.com/mtah/IRC-js/tarball/master', 'http://github.com/mtah/jasmine-node/tarball/master']
+
 task 'compile', 'compile to javascript', ->
   compile 'src'
 
@@ -32,7 +34,7 @@ task 'spec', 'run specs', ->
   compile 'src', [], ->
     compile 'spec', ['--no-wrap'], ->
       require.paths.push path.join('build', 'src'), path.join('build', 'src', 'vendor'), __dirname
-      jasmine.executeSpecsInFolder path.join('build', 'spec'), (runner, log) ->
+      require('jasmine').executeSpecsInFolder path.join('build', 'spec'), (runner, log) ->
         process.exit runner.results().failedCount
 
 task 'run', 'run bot', ->

@@ -1,7 +1,6 @@
 # -*- Mode: coffee; tab-width: 2 -*-
 
 path = require 'path'
-require.paths.push path.join(__dirname, 'vendor')
 Bot = require './lib/bot'
 
 opts =

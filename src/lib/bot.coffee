@@ -1,9 +1,10 @@
 # -*- Mode: coffee; tab-width: 2 -*-
 
+require 'underscore'
 sys = require 'sys'
 fs = require 'fs'
 path = require 'path'
-IRC = require 'IRC/lib/irc'
+IRC = require 'irc-js'
 
 class Bot
   constructor: (opts, irc) ->
