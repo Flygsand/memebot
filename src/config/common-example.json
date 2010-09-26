@@ -1,0 +1,4 @@
+{
+  "server"   : "irc.example.com",
+  "channels" : ["#foo", "#bar"]
+}

@@ -8,8 +8,10 @@ IRC = require 'irc-js'
 
 class Bot
   constructor: (opts, irc) ->
+    this.validate_opts(opts)
+
     @plugins = {}
-    @opts = opts ? {}
+    @opts = this.opts_with_defaults(opts)
     @irc = irc
 
   connect: ->
@@ -86,6 +88,15 @@ class Bot
 
   validate_plugin: (plugin) ->
     throw 'Plugin metadata missing' unless plugin.name and plugin.path
+
+  validate_opts: (opts) ->
+    missing = _(['server', 'channels']).without(_.keys(opts)...)
+    throw "Missing required options #{missing.join(', ')}" unless _(missing).isEmpty()
+
+  opts_with_defaults: (opts) ->
+    opts ?= {}
+    user = _.extend({}, {username: 'memebot', realname: 'memebot', hostname: 'localhost', servername: 'localhost'}, opts.user)
+    return _.extend({}, {nick: 'memebot', user: user}, opts)
 
   error: (e) ->
     this.say "error: #{e}"
