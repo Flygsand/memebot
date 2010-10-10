@@ -1,4 +1,6 @@
 {
   "server"   : "irc.example.com",
-  "channels" : ["#foo", "#bar"]
+  "channels" : ["#foo", "#bar"],
+  "prefix"   : ",",
+  "plugins"  : ["about"]
 }

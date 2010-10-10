@@ -11,6 +11,6 @@ plugin = (e, bot) ->
     when 'reload' then bot.reload_plugin plugin
 
 module.exports = ->
-  p = new Plugin {name: 'control', path: __filename}
-  p.map 'privmsg', plugin, {text: /plugin (load|unload|reload) (\w+)/}
+  p = new Plugin {name: 'control'}
+  p.command /plugin (load|unload|reload) (\w+)/, plugin
   p

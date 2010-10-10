@@ -14,6 +14,6 @@ about = (e, bot) ->
   bot.say "#{e.user}: #{response}", e.source
 
 module.exports = ->
-  p = new Plugin {name: 'about', path: __filename}
-  p.map 'privmsg', about, {text: /version|about(?: (source|author|license|version))?$/}
+  p = new Plugin {name: 'about'}
+  p.command /version|about(?: (source|author|license|version))?$/, about
   p

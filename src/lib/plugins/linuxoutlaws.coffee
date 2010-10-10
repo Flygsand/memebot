@@ -12,6 +12,6 @@ botspeak = (e, bot) ->
   bot.say "#{e.user}: #{util.randpick(phrases)}"
 
 module.exports = ->
-  p = new Plugin {name: 'linuxoutlaws', path: __filename}
-  p.map 'privmsg', botspeak, {user: /JibbyBot|FlyingMeerkat/}
+  p = new Plugin {name: 'linuxoutlaws'}
+  p.listen 'privmsg', {user: /JibbyBot|FlyingMeerkat/}, botspeak
   p
