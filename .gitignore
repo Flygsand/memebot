@@ -1,6 +1,6 @@
-build
-data
-tmp
-./config/common.json
+/build
+/data
+/tmp
+/config/common.json
 *~
 
