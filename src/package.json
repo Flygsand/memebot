@@ -1,0 +1,6 @@
+{
+  "name": "memebot"
+  "author": "Martin Häger",
+  "version": "0.9",
+  "dependencies": ["underscore", "nstore", "IRC-js", "log"]
+}

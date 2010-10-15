@@ -1,0 +1,13 @@
+{
+  "server"   : "memebot",
+  "channels" : ["#test"],
+  "nick"     : "memebot",
+  "user"     : {
+    "username"   : "memebot",
+    "hostname"   : "internetz",
+    "servername" : "nodelicious",
+    "realname"   : "memebot"
+  },
+  "prefix"   : ",",
+  "plugins"  : ["about", "tell"]
+}

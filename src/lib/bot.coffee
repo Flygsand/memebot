@@ -1,40 +1,40 @@
 # -*- Mode: coffee; tab-width: 2 -*-
-
-require 'underscore'
+#
 sys = require 'sys'
 fs = require 'fs'
 path = require 'path'
-IRC = require 'irc-js'
-nosqlite =
-  connect: (path, callback) ->
-    db =
-      find: (table, query, callback) ->
-        callback(null, [sys.inspect(query)])
-      save: (table, objects, callback) ->
-        callback(null, 'success')
 
-    callback(db)
+log = require 'log'
+require 'underscore'
+
+process.on 'uncaughtException', (err) ->
+  console.log err
 
 class Bot
-  constructor: (config, irc, db) ->
+  constructor: (config, irc, log) ->
     @config = config
     @irc = irc
-    @db = db
+    @log = log
     @plugins = {}
+    @listeners = []
+
+  load: ->
     for name in @config.plugins
-      this.load_plugin name
+      @load_plugin name
 
-  connect: ->
-    for ev_type in ['privmsg']
-      @irc.addListener ev_type, this.trigger.bind(this, {type: ev_type})
+    for type in ['privmsg', 'join']
+      callback = _.bind(@trigger, this, {type: type})
+      @listeners.push {type: type, callback: callback}
+      @irc.addListener type, callback
 
-    on_connect = =>
-      this.join @config.channels... if @config.channels instanceof Array
-    @irc.connect ->
-      setTimeout on_connect, 3000
+  unload: ->
+    for listener in @listeners
+      @irc.removeListener listener.type, listener.callback
 
-  disconnect: ->
-    @irc.quit()
+    @listeners = []
+
+    for name in _.keys(@plugins)
+      @unload_plugin name
 
   say: (message, targets...) ->
     targets = @config.channels unless targets.length > 0
@@ -43,7 +43,7 @@ class Bot
       @irc.privmsg target, message, true
 
   action: (action, targets...) ->
-    this.say "\001ACTION #{action}\001", targets...
+    @say "\001ACTION #{action}\001", targets...
 
   part: (channels...) ->
     for ch in channels
@@ -59,62 +59,34 @@ class Bot
     event.text = data.params[data.params.length - 1].toLowerCase()
     event.data = data
 
-    for name, p of @plugins
-      p.trigger event, this
+    for name, plugin of @plugins
+      plugin.trigger event
 
   load_plugin: (name) ->
-    return false if name in @plugins
-
-    plugin_path = path.join(@config.plugin_dir, name)
     try
-      plugin = require plugin_path
+      @unload_plugin name
+      plugin = require path.join(__dirname, 'plugins', name)
+      plugin = plugin()
+      plugin.bot = this
+      plugin.name = name
+      plugin.onload() if plugin.onload
+      @plugins[name] = plugin
     catch error
-      throw "No such plugin '#{name}'"
-
-    @plugins[name] = plugin()
-
-    if module.unCacheModule
-      fs.watchFile plugin_path, ->
-        sys.puts plugin_path
-        module.unCacheModule plugin_path
-        reload_plugin plugin.info.name
-
-    return plugin
+      @log.error "Error loading plugin '#{name}\n#{error.stack}'"
 
   unload_plugin: (name) ->
-    return false unless name in @plugins
+    return false unless @plugins[name]
 
     plugin = @plugins[name]
-    fs.unWatchFile path.join(@config.plugin_dir, name)
+    plugin.onunload() if plugin.onunload
     delete @plugins[name]
-
-    return plugin
-
-  reload_plugin: (name) ->
-    this.unload_plugin name
-    this.load_plugin name
+    delete plugin.bot
+    delete plugin
 
   error: (e) ->
-    this.say "error: #{e}"
+    @say "error: #{e}"
 
   info: ->
-    {version: '0.9'}
-
-Bot::run = (config) ->
-  validate = (cfg) ->
-    missing = _(['server', 'channels']).without(_.keys(cfg)...)
-    throw "Missing required configuration option(s): #{missing.join(', ')}" unless _(missing).isEmpty()
-
-  defaultize = (cfg) ->
-    cfg ?= {}
-    user = _.extend {}, {username: 'memebot', realname: 'memebot', hostname: 'localhost', servername: 'localhost'}, cfg.user
-    return _.extend {}, {nick: 'memebot', plugin_dir: path.join(__dirname, 'plugins'), db: './tmp/memebot.db', user: user}, cfg
-
-  config = if _.isFunction config then config() else config
-  validate(config)
-  config = defaultize config
-
-  nosqlite.connect config.db, (db) ->
-    new Bot(config, new IRC(config), db).connect()
+    {version: '0.99'}
 
 module.exports = Bot

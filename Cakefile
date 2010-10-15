@@ -22,7 +22,7 @@ compile = (dir, args, callback) ->
       run 'coffee', args.concat(['-o', path.join('build', dir), '-c', dir]), callback
 
 task 'dependencies', 'install dependencies', ->
-  run 'npm', ['install', 'underscore', 'http://github.com/mtah/IRC-js/tarball/master', 'http://github.com/mtah/jasmine-node/tarball/master']
+  run 'npm', ['install', 'underscore', 'log', 'http://github.com/mtah/nstore/tarball/master', 'http://github.com/mtah/IRC-js/tarball/master', 'http://github.com/mtah/jasmine-node/tarball/master']
 
 task 'compile', 'compile to javascript', ->
   compile 'src'
@@ -39,7 +39,7 @@ task 'spec', 'run specs', ->
 
 task 'run', 'run bot', ->
   compile 'src', [], ->
-    run 'node', [path.join(__dirname, 'build', 'src', 'memebot.js')]
+    run 'node', ['./build/src/lib/index.js']
 
 task 'clean', 'clean up build residue', ->
   run 'rm', ['-rf', 'build']
