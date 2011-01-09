@@ -50,7 +50,9 @@ class Plugin
       try
         callback()
       catch error
-        @bot.error "[#{@name}] #{error}"
+        @bot.error "[#{@name}] #{error.message}"
+        @bot.log.error "[#{@name}] #{error.message}"
+        @bot.log.error "[#{@name}] #{error.stack}"
 
   db: (name, callback) ->
     if @databases[name]
