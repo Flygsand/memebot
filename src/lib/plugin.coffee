@@ -1,6 +1,6 @@
 # -*- Mode: coffee; tab-width: 2 -*-
 
-require 'underscore'
+_ = require 'underscore'
 nstore = require('nstore').extend(require('nstore/query')())
 
 sys = require 'sys'

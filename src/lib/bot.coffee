@@ -5,7 +5,7 @@ fs = require 'fs'
 path = require 'path'
 
 log = require 'log'
-require 'underscore'
+_ = require 'underscore'
 
 process.on 'uncaughtException', (err) ->
   console.log err

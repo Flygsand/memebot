@@ -4,7 +4,7 @@ sys = require 'sys'
 fs = require 'fs'
 path = require 'path'
 
-require 'underscore'
+_ = require 'underscore'
 IRC = require 'irc-js'
 Log = require 'log'
 
